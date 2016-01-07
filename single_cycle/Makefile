@@ -1,4 +1,7 @@
-all: regfile_tb.vvp alu_tb.vvp
+all: top_tb.vvp regfile_tb.vvp alu_tb.vvp
+
+top_tb.vvp: tb/top_tb.v tb/top.v tb/imem.v tb/dmem.v mips.v datapath.v controller.v flopr.v adder.v sln.v mux2.v regfile.v alu.v
+	iverilog -o tb/top_tb.vvp tb/top_tb.v tb/top.v tb/imem.v tb/dmem.v mips.v datapath.v controller.v flopr.v adder.v sln.v mux2.v regfile.v alu.v
 
 regfile_tb.vvp: tb/regfile_tb.v regfile.v
 	iverilog -o tb/regfile_tb.vvp tb/regfile_tb.v regfile.v
