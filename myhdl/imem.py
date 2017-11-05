@@ -6,9 +6,7 @@ def Imem(addr, rd, ROM):
     """ A simple memory
 
     clk -- in
-    we -- in - write enable
     addr -- in vec - read/write address
-    wd -- in vec - data to be written
     rd -- out vec - data to be read
 
     """
