@@ -1,8 +1,9 @@
 from myhdl import *
 from math import log2
+import config
 
 @block
-def Dmem(clk, we, addr, wd, rd, depth=64):
+def Dmem(clk, we, addr, wd, rd, WORD_SIZE=32, DEPTH=64):
 
     """ A simple memory
 
@@ -14,15 +15,14 @@ def Dmem(clk, we, addr, wd, rd, depth=64):
 
     """
 
-    addr_width = int(log2(depth))
+    addr_width = int(log2(DEPTH))
     iaddr = addr(addr_width + 2, 2)
 
-    RAM = [Signal(modbv(wd.val)) for i in range(depth)]
+    RAM = [Signal(intbv(0, _nrbits=WORD_SIZE)) for i in range(DEPTH)]
 
     @always(clk.posedge)
     def write_logic():
         if we:
-            #RAM[int(addr >> 2)].next = wd
             RAM[int(iaddr)].next = wd
 
     @always_comb
@@ -33,11 +33,12 @@ def Dmem(clk, we, addr, wd, rd, depth=64):
 
 
 if __name__ == '__main__':
+
     clk = Signal(bool())
     we = Signal(bool())
-    addr = Signal(modbv(0)[32:])
-    wd = Signal(modbv(0)[32:])
-    rd = Signal(modbv(0)[32:])
+    addr = Signal(intbv(0, _nrbits=config.DSIZE))
+    wd = Signal(intbv(0, _nrbits=config.DSIZE))
+    rd = Signal(intbv(0, _nrbits=config.DSIZE))
 
-    dmem_inst = Dmem(clk, we, addr, wd, rd)
+    dmem_inst = Dmem(clk, we, addr, wd, rd, WORD_SIZE=config.DSIZE, DEPTH=config.RAM_DEPTH)
     dmem_inst.convert(hdl='VHDL')

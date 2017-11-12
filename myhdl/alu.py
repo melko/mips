@@ -1,4 +1,5 @@
 from myhdl import *
+import config
 
 ALU_OPS = enum(
     'A_AND_B',
@@ -26,16 +27,16 @@ def ALU(A, B, fun, Y, zero):
 
     """ A simple ALU
 
-    A -- first input (vector)
-    B -- second input (vector)
-    fun -- function selector (vector)
-    Y -- result (vector)
-    zero -- result is zero (bit)
+    A -- in vec - first operand
+    B -- in vec - second operand
+    fun -- in vec - function selector
+    Y -- out vec - result
+    zero -- out - result is zero
 
     """
 
-    result = Signal(modbv(0)[len(Y):])
-    BB = Signal(modbv(0)[len(B):])
+    result = Signal(modbv(0, _nrbits=config.DSIZE))
+    BB = Signal(modbv(0, _nrbits=config.DSIZE))
     res = fun(len(fun) - 1)
     op = fun(len(fun) - 1, 0)
     tmp_sum = Signal(modbv(Y.val))
@@ -55,7 +56,6 @@ def ALU(A, B, fun, Y, zero):
         elif decoded_op == ALU_OPS.A_PLUS_B:
             result.next = (A + BB + res)
         elif decoded_op == ALU_OPS.SLT:
-            #result.next = modbv((A + BB.signed() + res))[len(Y):] >> (len(A) - 1)
             result.next = tmp_sum[31]
 
     @always_comb
@@ -71,10 +71,10 @@ def ALU(A, B, fun, Y, zero):
     return instances()
 
 if __name__ == '__main__':
-    A = Signal(modbv(0)[32:])
-    B = Signal(modbv(0)[32:])
-    fun = Signal(modbv(0)[4:])
-    Y = Signal(modbv(0)[32:])
+    A = Signal(modbv(0, _nrbits=config.DSIZE))
+    B = Signal(modbv(0, _nrbits=config.DSIZE))
+    fun = Signal(modbv(0, _nrbits=config.ALU_FUN_SIZE))
+    Y = Signal(modbv(0, _nrbits=config.DSIZE))
     zero = Signal(bool())
 
     ALU_inst = ALU(A, B, fun, Y, zero)

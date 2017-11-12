@@ -1,26 +1,26 @@
 from myhdl import *
-
-
+import config
 
 @block
 def Controller(op, funct, jump, branch, aluop, alusrc, regdst, regwrite, memwrite, memtoreg, sextend):
 
     """ MIPS controller unit
 
-    op -- in
-    funct -- in
-    jump -- out bit
-    branch -- out bit
-    aluop -- out
-    alusrc -- out bit
-    regdst -- out bit
-    regwrite -- out bit
-    memwrite -- out bit
-    memtoreg -- out bit
-    sextend -- out bit
+    op -- in vec
+    funct -- in vec
+    jump -- out
+    branch -- out
+    aluop -- out vec
+    alusrc -- out
+    regdst -- out
+    regwrite -- out
+    memwrite -- out
+    memtoreg -- out
+    sextend -- out
+
     """
 
-    controls = Signal(modbv(0)[8:])
+    controls = Signal(intbv(0)[8:])
 
     @always_comb
     def logic2():
@@ -48,7 +48,6 @@ def Controller(op, funct, jump, branch, aluop, alusrc, regdst, regwrite, memwrit
             elif funct == 0b101010: aluop.next = 0b1111 # SLT
             else:
                 aluop.next = 0
-                #raise ValueError("Invalid ALU funct (%s)" % bin(funct))
 
         elif op == 0b000010:
             controls.next = 0b10000000
@@ -85,11 +84,11 @@ def Controller(op, funct, jump, branch, aluop, alusrc, regdst, regwrite, memwrit
     return instances()
 
 if __name__ == '__main__':
-    op = Signal(modbv(0)[6:])
-    funct = Signal(modbv(0)[6:])
+    op = Signal(intbv(0, _nrbits=config.OPCODE_SIZE))
+    funct = Signal(intbv(0, _nrbits=config.FUNCT_SIZE))
     jump = Signal(bool())
     branch = Signal(bool())
-    aluop = Signal(modbv(0)[4:])
+    aluop = Signal(intbv(0, _nrbits=config.ALU_FUN_SIZE))
     alusrc = Signal(bool())
     regdst = Signal(bool())
     regwrite = Signal(bool())

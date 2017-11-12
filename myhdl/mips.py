@@ -1,6 +1,7 @@
 from myhdl import *
 from datapath import Datapath
 from controller import Controller
+import config
 
 @block
 def Mips(clk, reset, pc, instr, memwrite, aluout, writedata, readdata):
@@ -18,8 +19,8 @@ def Mips(clk, reset, pc, instr, memwrite, aluout, writedata, readdata):
 
     """
 
-    op = instr(32, 26)
-    funct = instr(6, 0)
+    op = instr(*config.OPCODE_RANGE)
+    funct = instr(*config.FUNCT_RANGE)
 
     memtoreg = Signal(bool())
     alusrc = Signal(bool())
@@ -29,7 +30,7 @@ def Mips(clk, reset, pc, instr, memwrite, aluout, writedata, readdata):
     branch = Signal(bool())
     sextend = Signal(bool())
 
-    aluop = Signal(modbv(0)[4:])
+    aluop = Signal(modbv(0)[config.ALU_FUN_SIZE:])
 
     controller_inst = Controller(op, funct, jump, branch, aluop, alusrc, regdst, regwrite, memwrite, memtoreg, sextend)
 
@@ -41,12 +42,12 @@ def Mips(clk, reset, pc, instr, memwrite, aluout, writedata, readdata):
 if __name__ == '__main__':
     clk = Signal(bool())
     reset = ResetSignal(0, active=1, async=True)
-    pc = Signal(modbv(0)[32:])
-    instr = Signal(modbv(0)[32:])
+    pc = Signal(modbv(0)[config.ASIZE:])
+    instr = Signal(modbv(0)[config.DSIZE:])
     memwrite = Signal(bool())
-    aluout = Signal(modbv(0)[32:])
-    writedata = Signal(modbv(0)[32:])
-    readdata = Signal(modbv(0)[32:])
+    aluout = Signal(modbv(0)[config.DSIZE:])
+    writedata = Signal(modbv(0)[config.DSIZE:])
+    readdata = Signal(modbv(0)[config.DSIZE:])
 
     mips_inst = Mips(clk, reset, pc, instr, memwrite, aluout, writedata, readdata)
     mips_inst.convert(hdl='verilog')

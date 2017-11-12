@@ -1,4 +1,5 @@
 from myhdl import *
+import config
 
 @block
 def Imem(addr, rd, ROM):
@@ -19,8 +20,9 @@ def Imem(addr, rd, ROM):
 
 
 if __name__ == '__main__':
-    addr = Signal(modbv(0)[32:])
-    rd = Signal(modbv(0)[32:])
+
+    addr = Signal(intbv(0, _nrbits=config.ASIZE))
+    rd = Signal(intbv(0, _nrbits=config.DSIZE))
     ROM = tuple(range(64))
 
     imem_inst = Imem(addr, rd, ROM)

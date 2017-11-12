@@ -2,9 +2,10 @@ from myhdl import *
 from mips import Mips
 from dmem import Dmem
 from imem import Imem
+import config
 
 
-def read_file(memfile):
+def read_romfile(memfile):
     with open(memfile, "r") as f:
         data = f.readlines()
     data = list(map(lambda x: int(x.strip(), 16), data))
@@ -31,12 +32,12 @@ def tb_top():
     memfile = "memfile.dat"
     clk_period = 10
 
-    ROM = read_file(memfile)
+    ROM = read_romfile(memfile)
 
     clk = Signal(bool())
     reset = ResetSignal(1, active=1, async=True)
 
-    writedata = Signal(modbv(0)[word_size:])
+    writedata = Signal(intbv(0)[word_size:])
     daddr = Signal(modbv(0)[word_size:])
     memwrite = Signal(bool())
 
@@ -70,4 +71,5 @@ if __name__ == '__main__':
     tb = tb_top()
     conversion.verify.simulator = 'ghdl'
     #conversion.verify(tb)
+    tb.convert(hdl='VHDL')
     sim = Simulation(tb_top()).run()
