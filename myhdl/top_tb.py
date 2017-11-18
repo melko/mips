@@ -71,5 +71,5 @@ if __name__ == '__main__':
     tb = tb_top()
     conversion.verify.simulator = 'ghdl'
     #conversion.verify(tb)
-    tb.convert(hdl='VHDL')
+    tb.convert(initial_values=True, hdl='verilog')
     sim = Simulation(tb_top()).run()

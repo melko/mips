@@ -38,7 +38,7 @@ def Datapath(clk, reset, instruction, pc, readdata, writedata, aluout, jump, bra
 
     branchgate = Signal(bool())
     signimm = Signal(intbv(0, _nrbits=config.ASIZE).signed())
-    signimmsh = Signal(intbv(0, _nrbits=config.ASIZE))
+    signimmsh = Signal(modbv(0, _nrbits=config.ASIZE))
     immediate = Signal(intbv(0, _nrbits=config.ASIZE))
 
     unsignimm = instruction(*config.IMMEDIATE_RANGE)
@@ -86,8 +86,8 @@ def Datapath(clk, reset, instruction, pc, readdata, writedata, aluout, jump, bra
     def logic():
         pcbranchm.next = pcbranch if branchgate else pcplus4
         immediate.next = signimm[len(signimm):] if sextend else unsignimm
-        pcjump.next = concat(pcplus4[:(len(jump_imm_op)+2)], jump_imm_op, modbv(0)[2:])
-        signimmsh.next = (signimm << 2)[len(signimmsh):]
+        pcjump.next = concat(pcplus4[:(len(jump_imm_op)+2)], jump_imm_op, intbv(0)[2:])
+        signimmsh.next = (signimm << 2)
 
     @always_comb
     def logic2():
